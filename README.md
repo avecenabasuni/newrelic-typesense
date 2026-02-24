@@ -119,8 +119,6 @@ All NRQL queries and alert condition configs are shared across environments — 
 - [New Relic NRQL Reference](https://docs.newrelic.com/docs/nrql/)
 - [nri-bundle Helm Chart](https://github.com/newrelic/helm-charts/tree/master/charts/nri-bundle)
 
----
-
 ## License
 
 MIT
