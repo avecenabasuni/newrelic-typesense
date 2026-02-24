@@ -1,0 +1,1333 @@
+{
+  "name": "Typesense Monitoring",
+  "description": "Typesense search engine monitoring dashboard via New Relic Flex. All fields verified with nri-flex 1.17.2. Replace accountId 0 with your New Relic Account ID before importing.",
+  "permissions": "PUBLIC_READ_WRITE",
+  "pages": [
+    {
+      "name": "Overview",
+      "description": "Summary of Typesense health and performance",
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "# Typesense Monitoring\n---\nThis dashboard monitors the Typesense search engine using New Relic Flex. Data is collected from the `/health`, `/stats.json`, and `/metrics.json` endpoints every 60 seconds.\n\n**Replace `accountId: 0`** throughout this JSON with your New Relic Account ID before importing. | [Typesense Docs](https://typesense.org/docs/) | [New Relic Flex Docs](https://docs.newrelic.com/docs/infrastructure/host-integrations/host-integrations-list/flex-integration-tool-build-your-own-integration/)"
+          }
+        },
+        {
+          "title": "Node Health",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), WHERE ok = 'true') AS 'Healthy', filter(count(*), WHERE ok = 'false') AS 'Failed' FROM TypesenseHealthSample SINCE 5 minutes ago"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 0
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Total Requests / sec",
+          "layout": {
+            "column": 3,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(total_requests_per_second) AS 'Total Req/sec' FROM TypesenseStatsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Search Requests / sec",
+          "layout": {
+            "column": 5,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_requests_per_second) AS 'Search Req/sec' FROM TypesenseStatsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Search Latency (ms)",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_latency_ms) AS 'Avg Search Latency (ms)' FROM TypesenseStatsSample SINCE 5 minutes ago"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 200
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 500
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "CPU Usage (%)",
+          "layout": {
+            "column": 9,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_cpu_active_percentage) AS 'CPU (%)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 70
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 90
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Typesense Memory Usage (MB)",
+          "layout": {
+            "column": 11,
+            "row": 3,
+            "width": 2,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(typesense_memory_active_bytes) / 1e6 AS 'Memory (MB)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Search Request Rate",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_requests_per_second) AS 'Search Req/sec', average(total_requests_per_second) AS 'Total Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Overloaded Requests / sec",
+          "layout": {
+            "column": 7,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(overloaded_requests_per_second) AS 'Overloaded Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#c04d30",
+                  "seriesName": "Overloaded Req/sec"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Request Breakdown per Operation",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_requests_per_second) AS 'Search', average(write_requests_per_second) AS 'Write', average(delete_requests_per_second) AS 'Delete', average(import_requests_per_second) AS 'Import' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Latency per Operation (ms)",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_latency_ms) AS 'Search (ms)', average(write_latency_ms) AS 'Write (ms)', average(delete_latency_ms) AS 'Delete (ms)', average(import_latency_ms) AS 'Import (ms)' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Performance",
+      "description": "Request rate, latency, cache hit ratio, and write queue",
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Performance\nThis page shows detailed Typesense performance metrics: request rate per operation, latency, cache hit ratio, and pending write batches. All data sourced from `TypesenseStatsSample`."
+          }
+        },
+        {
+          "title": "Search Request Rate",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_requests_per_second) AS 'Search Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "Search Req/sec"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Write Request Rate",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(write_requests_per_second) AS 'Write Req/sec', average(import_requests_per_second) AS 'Import Req/sec', average(delete_requests_per_second) AS 'Delete Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Total Request Breakdown (Stacked)",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.stacked-bar"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_requests_per_second) AS 'Search', average(write_requests_per_second) AS 'Write', average(delete_requests_per_second) AS 'Delete', average(import_requests_per_second) AS 'Import' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Search Latency (ms)",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(search_latency_ms) AS 'Search Latency (ms)' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Write Latency (ms)",
+          "layout": {
+            "column": 5,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(write_latency_ms) AS 'Write Latency (ms)', average(import_latency_ms) AS 'Import Latency (ms)' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Delete Latency (ms)",
+          "layout": {
+            "column": 9,
+            "row": 9,
+            "width": 4,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(delete_latency_ms) AS 'Delete Latency (ms)' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Cache Hit Ratio",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(cache_hit_ratio) AS 'Cache Hit Ratio' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true,
+              "max": 1
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#329a3e",
+                  "seriesName": "Cache Hit Ratio"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Pending Write Batches",
+          "layout": {
+            "column": 7,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(pending_write_batches) AS 'Pending Write Batches' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#ebe52d",
+                  "seriesName": "Pending Write Batches"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Overloaded vs Total Requests",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(total_requests_per_second) AS 'Total Req/sec', average(overloaded_requests_per_second) AS 'Overloaded Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "Total Req/sec"
+                },
+                {
+                  "color": "#c04d30",
+                  "seriesName": "Overloaded Req/sec"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System Resources",
+      "description": "CPU, memory, disk, and network metrics",
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## System Resources\nThis page shows Typesense server resource utilization: CPU per core, memory (system-level and Typesense process), disk, and network. All data sourced from `TypesenseMetricsSample`."
+          }
+        },
+        {
+          "title": "CPU Usage - All Cores (%)",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_cpu_active_percentage) AS 'CPU All Cores (%)' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true,
+              "max": 100
+            },
+            "units": {
+              "unit": "PERCENTAGE"
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "CPU All Cores (%)"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "CPU Usage - Per Core (%)",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_cpu1_active_percentage) AS 'Core 1', average(system_cpu2_active_percentage) AS 'Core 2', average(system_cpu3_active_percentage) AS 'Core 3', average(system_cpu4_active_percentage) AS 'Core 4' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true,
+              "max": 100
+            },
+            "units": {
+              "unit": "PERCENTAGE"
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Typesense Memory Usage (MB)",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(typesense_memory_active_bytes) / 1e6 AS 'Active (MB)', average(typesense_memory_allocated_bytes) / 1e6 AS 'Allocated (MB)', average(typesense_memory_resident_bytes) / 1e6 AS 'Resident (MB)' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "System Memory Usage (MB)",
+          "layout": {
+            "column": 7,
+            "row": 6,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_memory_used_bytes) / 1e6 AS 'System Used (MB)', average(system_memory_total_bytes) / 1e6 AS 'System Total (MB)' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Memory Usage %",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_memory_used_bytes) / average(system_memory_total_bytes) * 100 AS 'System Memory (%)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "thresholds": [
+              {
+                "alertSeverity": "WARNING",
+                "value": 70
+              },
+              {
+                "alertSeverity": "CRITICAL",
+                "value": 85
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Typesense Memory / Total System (%)",
+          "layout": {
+            "column": 4,
+            "row": 9,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(typesense_memory_active_bytes) / average(system_memory_total_bytes) * 100 AS 'Typesense Memory (%)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Disk Usage",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(system_disk_used_bytes) / 1e9 AS 'Disk Used (GB)', latest(system_disk_total_bytes) / 1e9 AS 'Disk Total (GB)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": true
+            }
+          }
+        },
+        {
+          "title": "Swap Usage (MB)",
+          "layout": {
+            "column": 10,
+            "row": 9,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(system_memory_used_swap_bytes) / 1e6 AS 'Swap Used (MB)', average(system_memory_total_swap_bytes) / 1e6 AS 'Swap Total (MB)' FROM TypesenseMetricsSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Memory Fragmentation Ratio",
+          "layout": {
+            "column": 1,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(typesense_memory_fragmentation_ratio) AS 'Fragmentation Ratio' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Typesense Memory Detail (MB)",
+          "layout": {
+            "column": 7,
+            "row": 12,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(typesense_memory_active_bytes) / 1e6 AS 'Active', average(typesense_memory_mapped_bytes) / 1e6 AS 'Mapped', average(typesense_memory_retained_bytes) / 1e6 AS 'Retained', average(typesense_memory_metadata_bytes) / 1e6 AS 'Metadata' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "preserve"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Network Throughput (KB/s)",
+          "layout": {
+            "column": 1,
+            "row": 15,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT rate(sum(system_network_received_bytes), 1 second) / 1024 AS 'Inbound (KB/s)', rate(sum(system_network_sent_bytes), 1 second) / 1024 AS 'Outbound (KB/s)' FROM TypesenseMetricsSample TIMESERIES AUTO SINCE 1 hour ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "Inbound (KB/s)"
+                },
+                {
+                  "color": "#329a3e",
+                  "seriesName": "Outbound (KB/s)"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Alerts",
+      "description": "Node health history and overload conditions",
+      "widgets": [
+        {
+          "title": "",
+          "layout": {
+            "column": 1,
+            "row": 1,
+            "width": 12,
+            "height": 2
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.markdown"
+          },
+          "rawConfiguration": {
+            "text": "## Health & Alerts\nThis page shows node health history and conditions that require attention. The `ok` field is a **String**, not a Boolean. Use `ok = 'true'` (with quotes) in NRQL queries."
+          }
+        },
+        {
+          "title": "Health Check History",
+          "layout": {
+            "column": 1,
+            "row": 3,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT filter(count(*), WHERE ok = 'true') AS 'Healthy', filter(count(*), WHERE ok = 'false') AS 'Unhealthy' FROM TypesenseHealthSample TIMESERIES AUTO SINCE 6 hours ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#329a3e",
+                  "seriesName": "Healthy"
+                },
+                {
+                  "color": "#c04d30",
+                  "seriesName": "Unhealthy"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Last Health Check Status",
+          "layout": {
+            "column": 7,
+            "row": 3,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT latest(ok) AS 'Node ok?' FROM TypesenseHealthSample SINCE 5 minutes ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Health Check Count (last 24h)",
+          "layout": {
+            "column": 10,
+            "row": 3,
+            "width": 3,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.billboard"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT count(*) AS 'Total Checks', filter(count(*), WHERE ok = 'true') AS 'Healthy', filter(count(*), WHERE ok = 'false') AS 'Failed' FROM TypesenseHealthSample SINCE 24 hours ago"
+              }
+            ],
+            "platformOptions": {
+              "ignoreTimeRange": true
+            }
+          }
+        },
+        {
+          "title": "Overloaded Requests History (6h)",
+          "layout": {
+            "column": 1,
+            "row": 6,
+            "width": 12,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.area"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT average(overloaded_requests_per_second) AS 'Overloaded Req/sec', average(total_requests_per_second) AS 'Total Req/sec' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 6 hours ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#c04d30",
+                  "seriesName": "Overloaded Req/sec"
+                },
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "Total Req/sec"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Peak Search Latency (ms) - Last 24 Hours",
+          "layout": {
+            "column": 1,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(search_latency_ms) AS 'Peak Search Latency (ms)', average(search_latency_ms) AS 'Avg Search Latency (ms)' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "units": {
+              "unit": "MS"
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "colors": {
+              "seriesOverrides": [
+                {
+                  "color": "#c04d30",
+                  "seriesName": "Peak Search Latency (ms)"
+                },
+                {
+                  "color": "#1F5C99",
+                  "seriesName": "Avg Search Latency (ms)"
+                }
+              ]
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        },
+        {
+          "title": "Pending Write Batches - Last 24 Hours",
+          "layout": {
+            "column": 7,
+            "row": 9,
+            "width": 6,
+            "height": 3
+          },
+          "linkedEntityGuids": null,
+          "visualization": {
+            "id": "viz.line"
+          },
+          "rawConfiguration": {
+            "nrqlQueries": [
+              {
+                "accountId": 0,
+                "query": "SELECT max(pending_write_batches) AS 'Peak Pending Batches', average(pending_write_batches) AS 'Avg Pending Batches' FROM TypesenseStatsSample TIMESERIES AUTO SINCE 24 hours ago"
+              }
+            ],
+            "legend": {
+              "enabled": true
+            },
+            "yAxisLeft": {
+              "zero": true
+            },
+            "nullValues": {
+              "nullValue": "zero"
+            },
+            "platformOptions": {
+              "ignoreTimeRange": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variables": []
+}

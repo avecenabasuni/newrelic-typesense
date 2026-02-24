@@ -1,0 +1,53 @@
+# nri-flex-typesense.yaml
+# Single-node Typesense monitoring config for New Relic Flex
+#
+# Deploy as a standalone Kubernetes ConfigMap (alternative to values.yaml approach).
+# See README.md for the recommended Helm values.yaml approach.
+#
+# Usage:
+#   kubectl apply -f flex/nri-flex-typesense.yaml
+#
+# Replace <NAMESPACE> with the namespace where Typesense is running.
+# TYPESENSE_API_KEY is injected via Kubernetes Secret — see k8s/secret-example.yaml.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nri-flex-typesense
+  namespace: newrelic  # Must match the namespace of the Infrastructure Agent
+data:
+  nri-flex-typesense.yml: |
+    integrations:
+      - name: nri-flex
+        interval: 60s
+        config:
+          name: TypesenseMonitoring
+          apis:
+
+            # ── 1. Health Check ──────────────────────────────────────────────
+            # Event type: TypesenseHealthSample
+            # Key field:  ok (String — "true" or "false", NOT a boolean)
+            - name: TypesenseHealth
+              url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/health
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+            # ── 2. Request Stats & Latency ───────────────────────────────────
+            # Event type: TypesenseStatsSample
+            # Key fields: search_requests_per_second, search_latency_ms,
+            #             cache_hit_ratio, overloaded_requests_per_second,
+            #             pending_write_batches
+            - name: TypesenseStats
+              url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/stats.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+            # ── 3. System Metrics ────────────────────────────────────────────
+            # Event type: TypesenseMetricsSample
+            # Key fields: system_cpu_active_percentage,
+            #             typesense_memory_active_bytes,
+            #             system_disk_used_bytes, system_network_received_bytes
+            - name: TypesenseMetrics
+              url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/metrics.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}

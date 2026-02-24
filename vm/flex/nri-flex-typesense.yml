@@ -1,0 +1,39 @@
+# nri-flex-typesense.yml
+# Flex config for Typesense monitoring on VM / Bare Metal
+#
+# Place this file at: /etc/newrelic-infra/integrations.d/nri-flex-typesense.yml
+#
+# TYPESENSE_API_KEY is read from the host environment.
+# See vm/README.md Step 3 for how to set this securely via systemd.
+#
+# If Typesense is on a different host, replace localhost with the actual IP/hostname.
+# If Typesense uses a non-default port, update 8108 accordingly.
+
+integrations:
+  - name: nri-flex
+    interval: 60s
+    config:
+      name: TypesenseMonitoring
+      apis:
+
+        # ── 1. Health Check ──────────────────────────────────────────────
+        # Event type: TypesenseHealthSample
+        # Key field:  ok (String — "true" or "false", NOT a boolean)
+        - name: TypesenseHealth
+          url: http://localhost:8108/health
+          headers:
+            X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+        # ── 2. Request Stats & Latency ───────────────────────────────────
+        # Event type: TypesenseStatsSample
+        - name: TypesenseStats
+          url: http://localhost:8108/stats.json
+          headers:
+            X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+        # ── 3. System Metrics ────────────────────────────────────────────
+        # Event type: TypesenseMetricsSample
+        - name: TypesenseMetrics
+          url: http://localhost:8108/metrics.json
+          headers:
+            X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}

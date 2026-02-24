@@ -1,0 +1,117 @@
+# nri-flex-typesense-cluster.yaml
+# Multi-node Typesense cluster monitoring config for New Relic Flex
+#
+# Use this when Typesense runs as a StatefulSet with a headless Service.
+# Each node is scraped individually and tagged with node_id + pod_name
+# so you can filter/compare nodes in NRQL queries.
+#
+# Usage:
+#   kubectl apply -f flex/nri-flex-typesense-cluster.yaml
+#
+# Replace <NAMESPACE> with the namespace where Typesense is running.
+# Adjust the number of node blocks to match your cluster size.
+#
+# Verify headless service and pods first:
+#   kubectl get svc -n <NAMESPACE> | grep typesense
+#   kubectl get pods -n <NAMESPACE> | grep typesense
+#
+# DNS format for headless service:
+#   <pod-name>.<headless-service-name>.<namespace>.svc.cluster.local
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nri-flex-typesense-cluster
+  namespace: newrelic
+data:
+  nri-flex-typesense-cluster.yml: |
+    integrations:
+      - name: nri-flex
+        interval: 60s
+        config:
+          name: TypesenseClusterMonitoring
+          apis:
+
+            # ── Node 0 (typesense-0) ─────────────────────────────────────────
+            - name: TypesenseNode0Health
+              url: http://typesense-0.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/health
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node0
+                pod_name: typesense-0
+
+            - name: TypesenseNode0Stats
+              url: http://typesense-0.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/stats.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node0
+                pod_name: typesense-0
+
+            - name: TypesenseNode0Metrics
+              url: http://typesense-0.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/metrics.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node0
+                pod_name: typesense-0
+
+            # ── Node 1 (typesense-1) ─────────────────────────────────────────
+            - name: TypesenseNode1Health
+              url: http://typesense-1.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/health
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node1
+                pod_name: typesense-1
+
+            - name: TypesenseNode1Stats
+              url: http://typesense-1.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/stats.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node1
+                pod_name: typesense-1
+
+            - name: TypesenseNode1Metrics
+              url: http://typesense-1.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/metrics.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node1
+                pod_name: typesense-1
+
+            # ── Node 2 (typesense-2) ─────────────────────────────────────────
+            - name: TypesenseNode2Health
+              url: http://typesense-2.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/health
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node2
+                pod_name: typesense-2
+
+            - name: TypesenseNode2Stats
+              url: http://typesense-2.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/stats.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node2
+                pod_name: typesense-2
+
+            - name: TypesenseNode2Metrics
+              url: http://typesense-2.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/metrics.json
+              headers:
+                X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+              add_attribute:
+                node_id: node2
+                pod_name: typesense-2
+
+            # ── Add more nodes below following the same pattern ───────────────
+            # - name: TypesenseNode3Stats
+            #   url: http://typesense-3.typesense-headless.<NAMESPACE>.svc.cluster.local:8108/stats.json
+            #   headers:
+            #     X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+            #   add_attribute:
+            #     node_id: node3
+            #     pod_name: typesense-3

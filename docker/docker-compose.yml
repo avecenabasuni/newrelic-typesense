@@ -1,0 +1,63 @@
+# docker-compose.yml
+# Typesense + New Relic Infrastructure Agent (with nri-flex)
+#
+# Usage:
+#   1. Create a .env file with your credentials (see docker/README.md Step 2)
+#   2. docker compose --env-file .env up -d
+#
+# Environment variables required in .env:
+#   NEW_RELIC_LICENSE_KEY=your-license-key
+#   TYPESENSE_API_KEY=your-typesense-api-key
+#
+# To add the newrelic-infra service to an existing compose file,
+# copy only that service block. See docker/README.md for details.
+
+services:
+
+  # ── Typesense ──────────────────────────────────────────────────────────────
+  typesense:
+    image: typesense/typesense:27.0
+    container_name: typesense
+    restart: unless-stopped
+    ports:
+      - "8108:8108"
+    volumes:
+      - typesense-data:/data
+    command: >
+      --data-dir /data
+      --api-key ${TYPESENSE_API_KEY}
+      --enable-cors
+
+  # ── New Relic Infrastructure Agent (with nri-flex bundled) ────────────────
+  newrelic-infra:
+    image: newrelic/infrastructure:latest
+    container_name: newrelic-infra
+    restart: unless-stopped
+
+    # network_mode: host gives the agent full visibility into host metrics
+    # (CPU, disk, network) and lets nri-flex reach Typesense at localhost:8108.
+    # See README for how to configure this without network_mode: host.
+    network_mode: host
+    pid: host
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+
+    environment:
+      - NRIA_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+      - NRIA_DISPLAY_NAME=typesense-host
+      - TYPESENSE_API_KEY=${TYPESENSE_API_KEY}
+
+    volumes:
+      # Host filesystem (read-only) — required for infrastructure metrics
+      - /:/host:ro
+      # Docker socket — required for container discovery
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Flex config — mounted from this repo
+      - ./flex/nri-flex-typesense.yml:/etc/newrelic-infra/integrations.d/nri-flex-typesense.yml:ro
+
+    depends_on:
+      - typesense
+
+volumes:
+  typesense-data:

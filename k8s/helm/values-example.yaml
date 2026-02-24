@@ -1,0 +1,74 @@
+# values-example.yaml
+# Annotated Helm values template for nri-bundle
+#
+# This file shows only the blocks relevant to this Typesense integration.
+# Merge these values into your existing values.yaml rather than replacing it.
+#
+# Usage:
+#   helm upgrade <RELEASE_NAME> newrelic/nri-bundle \
+#     -n newrelic \
+#     -f values.yaml
+#
+# Prerequisites:
+#   - Kubernetes Secret 'typesense-api-key' must already exist in the newrelic namespace.
+#     See k8s/secret-example.yaml.
+#   - Replace <NAMESPACE> with the namespace where Typesense is running.
+#   - Replace <RELEASE_NAME> with your nri-bundle Helm release name
+#     (check with: helm list -n newrelic).
+
+newrelic-infrastructure:
+
+  # ── Inject Typesense API Key from Kubernetes Secret ─────────────────────────
+  # The secret 'typesense-api-key' must exist in the newrelic namespace.
+  # The key value will be available as $TYPESENSE_API_KEY inside the agent pod.
+  extraEnv:
+    - name: TYPESENSE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: typesense-api-key  # Name of the secret created in k8s/secret-example.yaml
+          key: api-key             # Key within the secret
+
+  # ── Flex Integration Config ──────────────────────────────────────────────────
+  # This embeds the Flex YAML directly into the Helm values, which ties its
+  # lifecycle to the Helm release. This is the recommended approach over
+  # deploying a standalone ConfigMap.
+  #
+  # IMPORTANT: Use spaces (not tabs) for indentation throughout this block.
+  # YAML is sensitive to mixed indentation and will silently fail.
+  integrations_config:
+    - name: nri-flex-typesense.yml
+      data: |
+        integrations:
+          - name: nri-flex
+            interval: 60s        # Scraping interval. 60s is recommended for most workloads.
+            config:
+              name: TypesenseMonitoring
+              apis:
+
+                # Health Check → TypesenseHealthSample
+                # Field 'ok' is a String: use WHERE ok = 'true' in NRQL (with quotes)
+                - name: TypesenseHealth
+                  url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/health
+                  headers:
+                    X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+                # Request Stats → TypesenseStatsSample
+                # Includes: request rates, latency per operation, cache hit ratio,
+                #           overloaded requests, and pending write batches
+                - name: TypesenseStats
+                  url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/stats.json
+                  headers:
+                    X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+                # System Metrics → TypesenseMetricsSample
+                # Includes: CPU per core, system & Typesense memory breakdown,
+                #           disk usage, and network throughput
+                - name: TypesenseMetrics
+                  url: http://typesense.<NAMESPACE>.svc.cluster.local:8108/metrics.json
+                  headers:
+                    X-TYPESENSE-API-KEY: ${TYPESENSE_API_KEY}
+
+# ── Other nri-bundle settings (merge with your existing values) ──────────────
+# global:
+#   licenseKey: YOUR_NEW_RELIC_LICENSE_KEY
+#   cluster: your-eks-cluster-name
