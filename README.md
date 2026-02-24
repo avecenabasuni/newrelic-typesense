@@ -1,5 +1,9 @@
 # Typesense + New Relic Integration
 
+License: [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+Release: [![Release](https://img.shields.io/github/v/release/avecenabasuni/newrelic-typesense)](https://github.com/avecenabasuni/newrelic-typesense/releases)
+CI build: [![CI](https://github.com/avecenabasuni/newrelic-typesense/actions/workflows/ci.yml/badge.svg)](https://github.com/avecenabasuni/newrelic-typesense/actions)
+
 Monitor your self-hosted [Typesense](https://typesense.org/) search engine with [New Relic](https://newrelic.com/) using `nri-flex` — no custom exporters required.
 
 > **Verified with:** nri-flex 1.17.2  
