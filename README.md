@@ -1,6 +1,6 @@
 # New Relic - Typesense Integration
 
-Monitor your self-hosted [Typesense](https://typesense.org/) search engine with [New Relic](https://newrelic.com/) using `nri-flex` — no custom exporters required.
+Monitor your self-hosted [Typesense](https://typesense.org/) search engine with [New Relic](https://newrelic.com/) using `nri-flex`, no custom exporters required.
 
 > **Verified with:** nri-flex 1.17.2  
 > **Typesense version:** 0.23+
@@ -61,10 +61,10 @@ Typesense                    New Relic Infrastructure Agent        New Relic Clo
 
 ## NRQL Queries, Dashboard & Alerts
 
-All NRQL queries and alert condition configs are shared across environments — the event types (`TypesenseHealthSample`, `TypesenseStatsSample`, `TypesenseMetricsSample`) are the same regardless of how the agent is deployed.
+All NRQL queries and alert condition configs are shared across environments, the event types (`TypesenseHealthSample`, `TypesenseStatsSample`, `TypesenseMetricsSample`) are the same regardless of how the agent is deployed.
 
-→ [`dashboard/dashboard-queries.md`](dashboard/dashboard-queries.md) — all queries as plain NRQL  
-→ [`dashboard/typesense-dashboard.json`](dashboard/typesense-dashboard.json) — importable New Relic dashboard (4 pages, 25+ widgets)
+→ [`dashboard/dashboard-queries.md`](dashboard/dashboard-queries.md): all queries as plain NRQL  
+→ [`dashboard/typesense-dashboard.json`](dashboard/typesense-dashboard.json): importable New Relic dashboard (4 pages, 25+ widgets)
 
 **To import the dashboard:**
 1. Open New Relic → Dashboards → Import dashboard
