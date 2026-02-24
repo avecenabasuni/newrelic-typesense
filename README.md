@@ -5,8 +5,6 @@ Monitor your self-hosted [Typesense](https://typesense.org/) search engine with 
 > **Verified with:** nri-flex 1.17.2  
 > **Typesense version:** 0.23+
 
----
-
 ## Choose Your Deployment Environment
 
 | Environment | Guide | Use Case |
@@ -14,8 +12,6 @@ Monitor your self-hosted [Typesense](https://typesense.org/) search engine with 
 | ☸️ [Kubernetes / EKS](k8s/README.md) | `k8s/` | Typesense running in a K8s cluster |
 | 🖥️ [VM / Bare Metal](vm/README.md) | `vm/` | Typesense on a Linux server |
 | 🐳 [Docker / Docker Compose](docker/README.md) | `docker/` | Typesense in containers (incl. local dev) |
-
----
 
 ## How It Works
 
@@ -34,8 +30,6 @@ Typesense                    New Relic Infrastructure Agent        New Relic Clo
 | `/health` | `TypesenseHealthSample` | Node health status |
 | `/stats.json` | `TypesenseStatsSample` | Request rate, latency, cache, overload |
 | `/metrics.json` | `TypesenseMetricsSample` | CPU, memory, disk, network |
-
----
 
 ## Repository Structure
 
@@ -65,8 +59,6 @@ Typesense                    New Relic Infrastructure Agent        New Relic Clo
     └── typesense-dashboard.json      ← Importable New Relic dashboard (4 pages, 25+ widgets)
 ```
 
----
-
 ## NRQL Queries, Dashboard & Alerts
 
 All NRQL queries and alert condition configs are shared across environments — the event types (`TypesenseHealthSample`, `TypesenseStatsSample`, `TypesenseMetricsSample`) are the same regardless of how the agent is deployed.
@@ -78,8 +70,6 @@ All NRQL queries and alert condition configs are shared across environments — 
 1. Open New Relic → Dashboards → Import dashboard
 2. Replace all instances of `"accountId": 0` with your actual New Relic Account ID
 3. Paste the JSON and import
-
----
 
 ## Field Reference
 
@@ -121,8 +111,6 @@ All NRQL queries and alert condition configs are shared across environments — 
 | `typesense_memory_active_bytes` | bytes | Active memory used by Typesense |
 | `typesense_memory_allocated_bytes` | bytes | Total memory allocated by Typesense |
 | `typesense_memory_fragmentation_ratio` | ratio | Memory fragmentation; < 1.5 is healthy |
-
----
 
 ## References
 
